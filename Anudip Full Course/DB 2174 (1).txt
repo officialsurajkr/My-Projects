@@ -1,0 +1,161 @@
+SQL Queries:
+
+1.to check Databases:
+->show databases;
+
+2.create database;
+-> create database [database_name];
+create database anudip99;
+
+3.to use specific database:
+-> use [database_name];
+
+4.to show tables in the database:
+->show tables;
+
+5.create table:
+->create table student(sid int primary key,name varchar(50) not null,email varchar(100) not null,marks int(100) not null);
+
+6.to check description of table:
+-> desc student;
+
+7.to modify table:
+->alter table [old table] rename to [new table];
+ alter table student rename to student_details;
+
+8.insert record in DB:
+-> insert into student(sid,name,email,marks) values(101,'chandan','chandan@gmail.com',70);
+ insert into student values(102,'randhir','randhir@gmail.com',60);
+insert into student values(103,'nilanjan','nil@gmail.com',67),(104,'shawin','shawin@gmail.com',77);
+
+9.to retrieve data from DB:
+->select * from student;
+ select sid,name from student;
+
+10.to add new columns on table:
+->alter table student add city varchar(10),add country varchar(15);
+
+11.update record:using where clause
+->update student set city='kolkata',country='india';
+ update student set city='darjeeling',country='india' where sid=104;
+update student set city='delhi',country='india' where name='nilanjan';
+ update student set name='randhir shaw' where sid=102;
+
+12. to delete record from student;
+->delete from student where sid=102;
+
+13.change attribute name for temporary basis using alias at the time of display:
+-> select sid as 'student_id',name as 'student_name' from student;
+
+14: distinct is used to return only distinct(different) values.inside table a column often contains many duplicate values and sometimes you only want to list different (distinct values):
+->select distinct(city) from student;
+ select count(distinct city) from student;
+select count(distinct city) as 'no of city' from student;
+
+15:ANd operator:
+->select name as 'UserName' from student where city='kolkata' and country='india';
+
+16:Or operator:
+->select * from student where city='kolkata' or country='india';
+
+17:select those details whose id starts from 104 to 107 in range:
+-> long way:select * from student where sid>=104 and sid<=107;
+using between operator:select * from student where sid between 104 and 107;
+select * from student where marks between 50 and 70;
+
+18:select those details whose marks is 67,77,70:
+using or:select * from student where marks=67 or marks=70 or marks=77;
+using in: select * from student where marks in(67,70,77);
+
+19:retrieve data from top:
+->select * from student limit 4;
+
+20:sort record in an ascending order:
+->by name: select * from student order by name;
+
+21.sort record in a descending order:
+->by name:select * from student order by name desc;
+
+22:retrieve data from bottom:
+->select * from student order by sid desc limit 4;
+
+23.like operator: is used in a where clause to search for a specified pattern in a column.
+there are two wildcards ofter used in conjunction with the like operator:
+1.the percentage sign(%) represent zero,one or multiple characters.
+2.the underscore sign(_) represent one,single character.
+Ans- select * from student where name like 'c%';
+select * from student where name like '_o%';
+select * from student where city like '%rj%';
+select * from student where city like '%a_';
+select * from student where name like 's__%';
+ select * from student where name like 'c%n';
+
+24.calculate total marks:
+ans:select sum(marks) as 'total marks' from student;
+25.wanna count no of students:
+ANs: select count(*) as 'no. of students' from student;
+select count(sid) as 'no. of students' from student;
+
+26.select those student details who has min marks
+ANs:select max(marks) from student;
+select min(marks) from student;
+
+27.select the student name who has less marks:
+ans:select name from student where marks=(select min(marks) from student);
+
+28.Group by: group by statements group rows that have the same values into summary rows,like "find the no. of students in each city".
+
+the group by statement is often used with aggregate functions.
+Ans:
+select count(sid),city from student group by city;
+ select count(sid) as 'no of students',city from student group by city;
+select count(sid),city from student group by city order by count(sid);
+
+29.the having clause is used instead of where clause with aggregate function.
+ select count(sid),city from student group by city having count(sid)>2;
+
+30>create table course(cid int primary key auto_increment,cname varchar(30) not null,duration varchar(50) not null,stud_id int,foreign key(stud_id) references student(sid));
+
+30.equi join:
+select student.name,student.city,course.cname,course.duration from student,course where student.sid=course.stud_id;
+ select s.name,s.city,c.cname,c.duration from student s,course c where s.sid=c.stud_id;
+
+inner join:returns records that have matching values in both tables;
+left(outer) join: returns all records from the left tables and the matching records from the right table. select s.name,c.cname from student s left join course c on  s.sid=c.stud_id;
+right(outer) join: returns all records from the right table,and the matched records from left table;
+
+31.mysql> savepoint del;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> delete from course where cid=9;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> savepoint upd;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> update course set cname="amazon web service" where cid=4;
+Query OK, 1 row affected (0.00 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> savepoint ins;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> insert into course(cname,duration) values('python','2 months');
+Query OK, 1 row affected (0.00 sec)
+rollback to upd;
+
+32> DCL- grant and revoke:
+1st: create user chandan identified by 'pass123';
+2nd:grant select,delete on student to chandan;
+3rd: go to C:\Program Files\MySQL\MySQL Server 8.0\bin>mysql -u chandan -p
+passwor:pass123
+ revoke select,delete on student from chandan;
+
+33.add foreign key later:
+Ans:alter table course add foreign key (stud_id) references student(sid);
+
+34.drop foreign key:
+drop table student;
+alter table course drop foreign key course_ibfk_1;
+
+35.truncate table course;(after rollback you will not get data back but if you delete with delete command,and dont commit then you can get data back by rollback )
